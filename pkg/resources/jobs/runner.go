@@ -53,18 +53,18 @@ func NewRunnerJob(k *v1alpha1.K6, index int) (*batchv1.Job, error) {
 				Spec: corev1.PodSpec{
 					Hostname:      name,
 					RestartPolicy: corev1.RestartPolicyNever,
-					Containers: []corev1.Container{{
+					Containers: []corev1.Container{
 						Image:   "loadimpact/k6:latest",
 						Name:    "k6",
 						Command: command,
 						Resources: corev1.ResourceRequirements{
 							Limits: corev1.ResourceList{
-								corev1.ResourceCPU:    "1800m",
-								corev1.ResourceMemory: "6Gi",
+								corev1.ResourceCPU:    resource.MustParse("1800m"),
+								corev1.ResourceMemory: resource.MustParse("6Gi"),
 							},
 							Requests: corev1.ResourceList{
-								corev1.ResourceCPU:    "1800m",
-								corev1.ResourceMemory: "6Gi",
+								corev1.ResourceCPU:    resource.MustParse("1800m"),
+								corev1.ResourceMemory: resource.MustParse("6Gi"),
 							},
 						},
 						VolumeMounts: []corev1.VolumeMount{{
@@ -72,7 +72,7 @@ func NewRunnerJob(k *v1alpha1.K6, index int) (*batchv1.Job, error) {
 							MountPath: "/test",
 						}},
 						Ports: []corev1.ContainerPort{{ContainerPort: 6565}},
-					}},
+					},
 					TerminationGracePeriodSeconds: &zero,
 					Volumes:                       newVolumeSpec(k.Spec.Script),
 				},
