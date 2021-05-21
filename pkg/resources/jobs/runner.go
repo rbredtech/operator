@@ -56,6 +56,16 @@ func NewRunnerJob(k *v1alpha1.K6, index int) (*batchv1.Job, error) {
 						Image:   "loadimpact/k6:latest",
 						Name:    "k6",
 						Command: command,
+						Resources: corev1.ResourceRequirements{
+							Limits: corev1.ResourceList{
+								corev1.ResourceCPU:    resource.MustParse("1.8"),
+								corev1.ResourceMemory: resource.MustParse("6G"),
+							},
+							Requests: corev1.ResourceList{
+								corev1.ResourceCPU:    resource.MustParse("1.8"),
+								corev1.ResourceMemory: resource.MustParse("6G"),
+							},
+						},
 						VolumeMounts: []corev1.VolumeMount{{
 							Name:      "k6-test-volume",
 							MountPath: "/test",
