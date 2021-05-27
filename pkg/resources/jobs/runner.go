@@ -7,7 +7,6 @@ import (
 	"github.com/k6io/operator/pkg/segmentation"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"strings"
 )
@@ -53,30 +52,20 @@ func NewRunnerJob(k *v1alpha1.K6, index int) (*batchv1.Job, error) {
 				Spec: corev1.PodSpec{
 					Hostname:      name,
 					RestartPolicy: corev1.RestartPolicyNever,
-					Containers: []corev1.Container{
-						Image: "loadimpact/k6:latest",
+					Containers: []corev1.Container{{
+						Image:   "loadimpact/k6:latest",
+						Name:    "k6",
+						Command: command,
 						Env: []corev1.EnvVar{{
 							Name:  "K6_CLOUD_TOKEN",
 							Value: "4573420dc807494ce909260ded087b052008754be89827bf8f5d6e24fd03af64",
 						}},
-						Name:    "k6",
-						Command: command,
-						Resources: corev1.ResourceRequirements{
-							Limits: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("1800m"),
-								corev1.ResourceMemory: resource.MustParse("6Gi"),
-							},
-							Requests: corev1.ResourceList{
-								corev1.ResourceCPU:    resource.MustParse("1800m"),
-								corev1.ResourceMemory: resource.MustParse("6Gi"),
-							},
-						},
 						VolumeMounts: []corev1.VolumeMount{{
 							Name:      "k6-test-volume",
 							MountPath: "/test",
 						}},
 						Ports: []corev1.ContainerPort{{ContainerPort: 6565}},
-					},
+					}},
 					TerminationGracePeriodSeconds: &zero,
 					Volumes:                       newVolumeSpec(k.Spec.Script),
 				},
