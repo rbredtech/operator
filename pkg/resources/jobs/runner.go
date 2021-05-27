@@ -54,7 +54,11 @@ func NewRunnerJob(k *v1alpha1.K6, index int) (*batchv1.Job, error) {
 					Hostname:      name,
 					RestartPolicy: corev1.RestartPolicyNever,
 					Containers: []corev1.Container{
-						Image:   "loadimpact/k6:latest",
+						Image: "loadimpact/k6:latest",
+						Env: []corev1.EnvVar{{
+							Name:  "K6_CLOUD_TOKEN",
+							Value: "4573420dc807494ce909260ded087b052008754be89827bf8f5d6e24fd03af64",
+						}},
 						Name:    "k6",
 						Command: command,
 						Resources: corev1.ResourceRequirements{
