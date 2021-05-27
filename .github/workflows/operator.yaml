@@ -1,0 +1,30 @@
+name: Deploy K6 Operator
+
+on:
+  push: {}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: tv-insight-cd
+          service_account_key: ${{ secrets.GCP_TV_INSIGHT_SA_KEY }}
+          export_default_credentials: true
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.16.4' # The Go version to download (if necessary) and use.
+      - uses: google-github-actions/get-gke-credentials@v0.2.1
+        with:
+          cluster_name: tv-insight-eu-cd
+          location: europe-west1
+      - run: sudo apt-get install make
+      - run: make docker-build
+      - run: make docker-push
+      - run: make delete
+      - run: make deploy
+
